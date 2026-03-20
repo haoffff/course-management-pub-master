@@ -1,4 +1,4 @@
-﻿name: Java CI with Maven
+name: Java CI with Semgrep
 
 on:
   pull_request:
@@ -7,23 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-
+    - uses: actions/checkout@v4
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
         distribution: 'temurin'
-        cache: maven
-
-    - name: Build with Maven
+    - name: Build
       run: chmod +x mvnw && ./mvnw clean package
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-jar
-        path: target/*.jar
+  semgrep:
+    runs-on: ubuntu-latest
+    container: returntocorp/semgrep
+    steps:
+    - uses: actions/checkout@v4
+    - name: Semgrep Scan
+      run: semgrep ci
+      env:
+        SEMGREP_RULES: p/ci p/java p/security-audit
