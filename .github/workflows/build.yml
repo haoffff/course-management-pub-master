@@ -23,6 +23,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Semgrep Scan
-      run: semgrep ci
+      run: semgrep ci --full
       env:
         SEMGREP_RULES: p/ci p/java p/security-audit
