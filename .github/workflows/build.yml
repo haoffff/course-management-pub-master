@@ -1,4 +1,4 @@
-name: Java CI with Security Scans
+name: Java CI
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-      - name: Build with Maven
+      - name: Build
         run: chmod +x mvnw && ./mvnw clean package
 
   sast_scan:
@@ -24,5 +24,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Semgrep Scan
-        run: |
-          docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep scan --config="p/java" --config="p/security-audit" --config="p/secrets"
+        run: docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep scan --config="auto"
