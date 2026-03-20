@@ -36,3 +36,14 @@ jobs:
           image-ref: 'eclipse-temurin:21-jdk-jammy'
           format: 'table'
           severity: 'CRITICAL,HIGH'
+  snyk_scan:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/maven@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
