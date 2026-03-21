@@ -1,0 +1,34 @@
+name: Security Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  all-in-one-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Лаба №3: Сканируем сам код (Semgrep)
+      - name: SAST Scan (Semgrep)
+        run: docker run --rm -v $(pwd):/src returntocorp/semgrep semgrep scan --config="auto"
+
+      # 2. Лаба №4: Сканируем Docker-образ (Trivy Image)
+      - name: Container Scan (Trivy Image)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'eclipse-temurin:21-jdk-jammy'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+
+      # 3. Лаба №5: Сканируем зависимости в pom.xml (Trivy FS)
+      - name: Dependency Scan (Trivy FS)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
